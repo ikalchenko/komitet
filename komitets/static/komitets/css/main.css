@@ -1,0 +1,43 @@
+@import url('https://fonts.googleapis.com/css?family=Indie+Flower');
+
+html, body {
+    height: 100vh;
+    width: 100%;
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+
+.without-margins {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.navbar {
+    width: 100%;
+}
+
+.navbar-brand {
+    font-family: 'Indie Flower', cursive;
+    font-size: 30px;
+    line-height: 20px;
+}
+
+.komitets-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+    height: calc(100vh - 56px);
+    width: 70px;
+    background: #212529;
+}
+
+.komitet-main {
+    overflow-y: auto;
+    height: calc(100vh - 56px);
+    background: #eeeeee;
+}
+
+.active-komitet::after {
+    content: " •"
+}
