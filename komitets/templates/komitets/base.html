@@ -7,7 +7,7 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Komitet</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'komitets/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'komitets/css/main.css' %}">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css"
           integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
@@ -15,13 +15,13 @@
             src="https://code.jquery.com/jquery-3.3.1.min.js"
             integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
             crossorigin="anonymous"></script>
-    <script src="{% static 'komitets/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
     <script src="{% static 'komitets/js/main.js' %}"></script>
 </head>
 <body>
 <div class="container-fluid without-margins">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand" href="{% url 'komitets:test' %}">Komitet</a>
+        <a class="navbar-brand" href="{% url 'komitets:main' %}">Komitet</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -48,7 +48,7 @@
 </div>
 <div class="container-fluid">
     <div class="row">
-        <div class="komitets-list" data-simplebar>
+        <div class="komitets-list">
             <a href="" class="active-komitet"><img src="http://via.placeholder.com/50x50" class="rounded-circle mb-1 mt-1" alt=""></a>
             <a href=""><img src="http://via.placeholder.com/50x50" class="rounded-circle mb-1 mt-1" alt=""></a>
             <a href=""><img src="http://via.placeholder.com/50x50" class="rounded-circle mb-1 mt-1" alt=""></a>

@@ -16,6 +16,30 @@ html, body {
     width: 100%;
 }
 
+.logo {
+    font-family: 'Indie Flower', cursive;
+    font-size: 50px;
+    margin-top: 100px;
+}
+
+.login-form {
+    border-left: 1px solid black;
+    padding-left: 50px;
+    max-width: 300px;
+}
+
+.login-centered {
+    max-width: 700px;
+    margin: 100px auto;
+}
+
+.tagline {
+    font-size: 40px;
+    max-width: 300px;
+    text-align: right;
+    margin-right: 50px;
+}
+
 .navbar-brand {
     font-family: 'Indie Flower', cursive;
     font-size: 30px;
@@ -28,7 +52,7 @@ html, body {
     align-items: center;
     overflow-y: auto;
     height: calc(100vh - 56px);
-    width: 70px;
+    width: 75px;
     background: #212529;
 }
 
@@ -38,6 +62,12 @@ html, body {
     background: #eeeeee;
 }
 
-.active-komitet::after {
-    content: " •"
+.active-komitet::before {
+    content: "● ";
+    text-decoration: none;
+    color: #cccccc;
+}
+
+.komitets-list :not(.active-komitet) img {
+    margin-left: 15px;
 }

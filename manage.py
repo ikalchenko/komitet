@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env pythonmulti-poll
 import os
 import sys
 

@@ -3,8 +3,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 from . import views
 
-app_name = 'komitets'
+app_name = 'users'
 urlpatterns = [
-    path('', views.MainView.as_view(), name='main'),
+    path('login', views.LoginView.as_view(), name='login'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) \
               + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
