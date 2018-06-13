@@ -4,6 +4,7 @@ from komitets.models import Committee
 
 
 class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     photo = models.ImageField()
 
 

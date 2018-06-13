@@ -5,6 +5,8 @@ from . import views
 
 app_name = 'users'
 urlpatterns = [
-    path('login', views.LoginView.as_view(), name='login'),
+    path('login', views.LogInView.as_view(), name='login'),
+    path('logout', views.LogOutView.as_view(), name='logout'),
+    path('signup', views.SignUpView.as_view(), name='signup'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) \
               + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
