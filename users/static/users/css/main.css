@@ -10,17 +10,17 @@
 .login-form {
     border-left: 1px solid black;
     padding-left: 50px;
-    max-width: 300px;
+    max-width: 400px;
 }
 
 .login-centered {
-    max-width: 700px;
+    max-width: 900px;
     margin: 100px auto;
 }
 
 .tagline {
     font-size: 40px;
-    max-width: 300px;
+    max-width: 400px;
     text-align: right;
     margin-right: 50px;
 }
