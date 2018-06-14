@@ -5,6 +5,8 @@ from django.db import migrations, models
 import django.db.models.deletion
 
 
+from django.contrib.auth.models import User
+
 class Migration(migrations.Migration):
 
     initial = True
@@ -31,4 +33,11 @@ class Migration(migrations.Migration):
                 ('photo', models.ImageField(upload_to='')),
             ],
         ),
+        # # WARNING Custom migration for unique email field in User model
+        # migrations.AlterField(
+        #     model_name=User,
+        #     name='email',
+        #     field=models.EmailField(unique=True)
+        # ),
+
     ]
