@@ -1,5 +1,5 @@
 {% extends 'users/auth_base.html' %}
-{% block content %}
+{% block login-form %}
     <form method="POST">
         {% csrf_token %}
         {{ form.as_p }}

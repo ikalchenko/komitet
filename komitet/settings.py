@@ -2,8 +2,6 @@ import os
 
 from django.urls import reverse
 
-from . import db_config, email_config
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -28,9 +26,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'users',
     'komitets',
     'cards',
-    'users',
 ]
 
 MIDDLEWARE = [
@@ -48,7 +46,11 @@ ROOT_URLCONF = 'komitet.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(BASE_DIR + '/templates'),
+            os.path.join(BASE_DIR + '/komitets/templates/komitets'),
+            os.path.join(BASE_DIR + '/users/templates/users'),
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -68,12 +70,8 @@ WSGI_APPLICATION = 'komitet.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': db_config.NAME,
-        'USER': db_config.USER,
-        'PASSWORD': db_config.PASSWORD,
-        'HOST': db_config.HOST,
-        'PORT': db_config.PORT,
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR + '/db.sqlite3',
     }
 }
 
@@ -98,11 +96,12 @@ AUTH_PASSWORD_VALIDATORS = [
 LOGIN_URL = '/login'
 LOGIN_REDIRECT_URL = '/'
 
-EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = email_config.HOST_USER
-EMAIL_HOST_PASSWORD = email_config.HOST_PASSWORD
-EMAIL_PORT = 587
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 1025
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+EMAIL_USE_TLS = False
+DEFAULT_FROM_EMAIL = 'testing@example.com'
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
@@ -130,9 +129,13 @@ STATICFILES_FINDERS = [
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
-    os.path.join(BASE_DIR, 'komitets/static/komitets'),
-    os.path.join(BASE_DIR, 'users/static/users'),
 ]
+
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+try:
+    from .local import *
+except ImportError:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

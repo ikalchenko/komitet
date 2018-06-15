@@ -1,7 +1,7 @@
-{% extends 'komitets/base.html' %}
+{% extends 'komitets/app_base.html' %}
 
 
-{% block komitet %}
+{% block komitet-detail %}
     <form method="post">
     {% csrf_token %}
         {{ form.as_p }}
