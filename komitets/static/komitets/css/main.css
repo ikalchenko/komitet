@@ -64,10 +64,14 @@ html, body {
 
 .active-komitet::before {
     content: "● ";
-    text-decoration: none;
     color: #cccccc;
 }
 
 .komitets-list :not(.active-komitet) img {
     margin-left: 15px;
+}
+
+.komitet-head {
+    height: 200px;
+    background: lightgrey;
 }

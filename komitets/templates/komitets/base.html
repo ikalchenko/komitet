@@ -22,6 +22,8 @@
 <div class="container-fluid without-margins">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand" href="{% url 'komitets:main' %}">Komitet</a>
+        <a href="{% url 'komitets:create-komitet' %}" class="btn btn-success ml-auto btn-sm"><i class="fas fa-plus"></i>
+            Add Komitet</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -49,97 +51,102 @@
 <div class="container-fluid">
     <div class="row">
         <div class="komitets-list">
-            <a href="" class="active-komitet"><img src="http://via.placeholder.com/50x50"
-                                                   class="rounded-circle mb-1 mt-1" alt=""></a>
-            <a href=""><img src="http://via.placeholder.com/50x50" class="rounded-circle mb-1 mt-1" alt=""></a>
-            <a href=""><img src="http://via.placeholder.com/50x50" class="rounded-circle mb-1 mt-1" alt=""></a>
-            <a href=""><img src="http://via.placeholder.com/50x50" class="rounded-circle mb-1 mt-1" alt=""></a>
-            <a href=""><img src="http://via.placeholder.com/50x50" class="rounded-circle mb-1 mt-1" alt=""></a>
-            <a href=""><img src="http://via.placeholder.com/50x50" class="rounded-circle mb-1 mt-1" alt=""></a>
-            <a href=""><img src="http://via.placeholder.com/50x50" class="rounded-circle mb-1 mt-1" alt=""></a>
-            <a href=""><img src="http://via.placeholder.com/50x50" class="rounded-circle mb-1 mt-1" alt=""></a>
-            <a href=""><img src="http://via.placeholder.com/50x50" class="rounded-circle mb-1 mt-1" alt=""></a>
-            <a href=""><img src="http://via.placeholder.com/50x50" class="rounded-circle mb-1 mt-1" alt=""></a>
+            {% for kom in komitets %}
+
+                {% if kom.id == komitet.id %}
+                    <a href="{% url 'komitets:komitet-detail' pk=komitet.id %}" class="active-komitet"><img
+                            src="http://via.placeholder.com/50x50"
+                            class="rounded-circle mb-1 mt-1" alt=""></a>
+                {% else %}
+                    <a href="{% url 'komitets:komitet-detail' pk=kom.id %}"><img src="http://via.placeholder.com/50x50"
+                                                                                 class="rounded-circle mb-1 mt-1"
+                                                                                 alt=""></a>
+                {% endif %}
+
+            {% endfor %}
         </div>
         <div class="komitet-main col-5">
-            <div class="komitet-head">
+            {% block komitet-detail %}
 
-            </div>
-            <div class="card mt-3 mb-2">
-                <div class="card-body">
-                    <h5 class="card-title">Title</h5>
-                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Et exercitationem id
-                        ipsa perspiciatis, repellendus saepe? Error, hic quam? Accusantium aspernatur illum ipsum iste,
-                        labore nam placeat suscipit tempora unde voluptatem.</p>
-                    <form action="" method="post">
-                        <a href="#" class="btn btn-danger float-right"><i class="fas fa-times"></i> Decline</a>
-                        <a href="#" class="btn btn-success float-right mr-3"><i class="fas fa-check"></i> Accept</a>
-                    </form>
-                </div>
-            </div>
-            <div class="card mt-2 mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Title</h5>
-                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Et exercitationem id
-                        ipsa perspiciatis, repellendus saepe? Error, hic quam? Accusantium aspernatur illum ipsum iste,
-                        labore nam placeat suscipit tempora unde voluptatem.</p>
-                    <form action="" method="post">
-                        <a href="#" class="btn btn-primary float-right"><i class="far fa-credit-card"></i> Pay</a>
-                        <a href="#" class="btn btn-light float-right mr-3"><i class="fas fa-money-bill"></i> Pay
-                            cash</a>
-                    </form>
-                </div>
-            </div>
-            <div class="card mt-2 mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Title</h5>
-                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Et exercitationem id
-                        ipsa perspiciatis, repellendus saepe? Error, hic quam? Accusantium aspernatur illum ipsum iste,
-                        labore nam placeat suscipit tempora unde voluptatem.</p>
-                </div>
-            </div>
-            <div class="card mt-2 mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Title</h5>
-                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Et exercitationem id
-                        ipsa perspiciatis, repellendus saepe? Error, hic quam? Accusantium aspernatur illum ipsum iste,
-                        labore nam placeat suscipit tempora unde voluptatem.</p>
-                    <form action="" method="post">
-                        <div class="radio">
-                            <label><input type="radio" name="choice">Option 1</label>
-                        </div>
-                        <div class="radio">
-                            <label><input type="radio" name="choice">Option 2</label>
-                        </div>
-                        <div class="radio">
-                            <label><input type="radio" name="choice">Option 2</label>
-                        </div>
-                        <a href="#" class="btn btn-primary float-right mr-3"><i class="fas fa-check"></i> Vote</a>
-                    </form>
-                </div>
-            </div>
-            <div class="card mt-2 mb-5">
-                <div class="card-body">
-                    <h5 class="card-title">Title</h5>
-                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Et exercitationem id
-                        ipsa perspiciatis, repellendus saepe? Error, hic quam? Accusantium aspernatur illum ipsum iste,
-                        labore nam placeat suscipit tempora unde voluptatem.</p>
-                    <form action="" method="post">
-                        <div class="radio">
-                            <label><input type="checkbox" name="check">Option 1</label>
-                        </div>
-                        <div class="radio">
-                            <label><input type="checkbox" name="check">Option 2</label>
-                        </div>
-                        <div class="radio">
-                            <label><input type="checkbox" name="check">Option 2</label>
-                        </div>
-                        <a href="#" class="btn btn-primary float-right mr-3"><i class="fas fa-check"></i> Vote</a>
-                    </form>
-                </div>
-            </div>
+            {% endblock %}
+            {#            <div class="komitet-head">#}
+            {##}
+            {#            </div>#}
+            {#            <div class="card mt-3 mb-2">#}
+            {#                <div class="card-body">#}
+            {#                    <h5 class="card-title">Title</h5>#}
+            {#                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Et exercitationem id#}
+            {#                        ipsa perspiciatis, repellendus saepe? Error, hic quam? Accusantium aspernatur illum ipsum iste,#}
+            {#                        labore nam placeat suscipit tempora unde voluptatem.</p>#}
+            {#                    <form action="" method="post">#}
+            {#                        <a href="#" class="btn btn-danger float-right"><i class="fas fa-times"></i> Decline</a>#}
+            {#                        <a href="#" class="btn btn-success float-right mr-3"><i class="fas fa-check"></i> Accept</a>#}
+            {#                    </form>#}
+            {#                </div>#}
+            {#            </div>#}
+            {#            <div class="card mt-2 mb-3">#}
+            {#                <div class="card-body">#}
+            {#                    <h5 class="card-title">Title</h5>#}
+            {#                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Et exercitationem id#}
+            {#                        ipsa perspiciatis, repellendus saepe? Error, hic quam? Accusantium aspernatur illum ipsum iste,#}
+            {#                        labore nam placeat suscipit tempora unde voluptatem.</p>#}
+            {#                    <form action="" method="post">#}
+            {#                        <a href="#" class="btn btn-primary float-right"><i class="far fa-credit-card"></i> Pay</a>#}
+            {#                        <a href="#" class="btn btn-light float-right mr-3"><i class="fas fa-money-bill"></i> Pay#}
+            {#                            cash</a>#}
+            {#                    </form>#}
+            {#                </div>#}
+            {#            </div>#}
+            {#            <div class="card mt-2 mb-3">#}
+            {#                <div class="card-body">#}
+            {#                    <h5 class="card-title">Title</h5>#}
+            {#                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Et exercitationem id#}
+            {#                        ipsa perspiciatis, repellendus saepe? Error, hic quam? Accusantium aspernatur illum ipsum iste,#}
+            {#                        labore nam placeat suscipit tempora unde voluptatem.</p>#}
+            {#                </div>#}
+            {#            </div>#}
+            {#            <div class="card mt-2 mb-3">#}
+            {#                <div class="card-body">#}
+            {#                    <h5 class="card-title">Title</h5>#}
+            {#                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Et exercitationem id#}
+            {#                        ipsa perspiciatis, repellendus saepe? Error, hic quam? Accusantium aspernatur illum ipsum iste,#}
+            {#                        labore nam placeat suscipit tempora unde voluptatem.</p>#}
+            {#                    <form action="" method="post">#}
+            {#                        <div class="radio">#}
+            {#                            <label><input type="radio" name="choice">Option 1</label>#}
+            {#                        </div>#}
+            {#                        <div class="radio">#}
+            {#                            <label><input type="radio" name="choice">Option 2</label>#}
+            {#                        </div>#}
+            {#                        <div class="radio">#}
+            {#                            <label><input type="radio" name="choice">Option 2</label>#}
+            {#                        </div>#}
+            {#                        <a href="#" class="btn btn-primary float-right mr-3"><i class="fas fa-check"></i> Vote</a>#}
+            {#                    </form>#}
+            {#                </div>#}
+            {#            </div>#}
+            {#            <div class="card mt-2 mb-5">#}
+            {#                <div class="card-body">#}
+            {#                    <h5 class="card-title">Title</h5>#}
+            {#                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Et exercitationem id#}
+            {#                        ipsa perspiciatis, repellendus saepe? Error, hic quam? Accusantium aspernatur illum ipsum iste,#}
+            {#                        labore nam placeat suscipit tempora unde voluptatem.</p>#}
+            {#                    <form action="" method="post">#}
+            {#                        <div class="radio">#}
+            {#                            <label><input type="checkbox" name="check">Option 1</label>#}
+            {#                        </div>#}
+            {#                        <div class="radio">#}
+            {#                            <label><input type="checkbox" name="check">Option 2</label>#}
+            {#                        </div>#}
+            {#                        <div class="radio">#}
+            {#                            <label><input type="checkbox" name="check">Option 2</label>#}
+            {#                        </div>#}
+            {#                        <a href="#" class="btn btn-primary float-right mr-3"><i class="fas fa-check"></i> Vote</a>#}
+            {#                    </form>#}
+            {#                </div>#}
         </div>
     </div>
+</div>
 </div>
 
 </body>

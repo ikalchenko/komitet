@@ -130,6 +130,8 @@ STATICFILES_FINDERS = [
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, 'komitets/static/komitets'),
+    os.path.join(BASE_DIR, 'users/static/users'),
 ]
 
 MEDIA_URL = '/media/'
