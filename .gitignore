@@ -1,5 +1,4 @@
 media
 *.sqlite3
 __pycache__
-db_config.py
-email_config.py
+komitet/local.py

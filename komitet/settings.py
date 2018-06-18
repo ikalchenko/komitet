@@ -71,7 +71,7 @@ WSGI_APPLICATION = 'komitet.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR + '/db.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3')
     }
 }
 
@@ -96,6 +96,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LOGIN_URL = '/login'
 LOGIN_REDIRECT_URL = '/'
 
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_HOST = 'localhost'
 EMAIL_PORT = 1025
 EMAIL_HOST_USER = ''
@@ -138,4 +139,4 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 try:
     from .local import *
 except ImportError:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    pass
