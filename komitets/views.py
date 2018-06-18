@@ -1,7 +1,8 @@
+from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.views import generic
-from .forms import CreateKomitetForm
+from .forms import CreateKomitetForm, InviteUserFormSet
 from .models import Committee
 from users.models import UserPermissions
 
@@ -43,6 +44,8 @@ class CreateKomitetView(generic.FormView):
 
     def get_context_data(self, **kwargs):
         qs = super().get_context_data()
-        qs['komitets'] = Committee.objects.all()
-        qs['user'] = self.request.user
+        user = self.request.user
+        qs['komitets'] = user.committee_set.all()
+        qs['user'] = user
+        qs['invite_form'] = InviteUserFormSet()
         return qs

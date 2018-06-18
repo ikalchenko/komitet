@@ -7,4 +7,10 @@
         {{ form.as_p }}
     <button type="submit" class="btn btn-success">Create</button>
     </form>
+
+    <form method="post">
+    {% csrf_token %}
+        {{ invite_form.as_p }}
+    <button type="submit" class="btn btn-success">Invite</button>
+    </form>
 {% endblock %}

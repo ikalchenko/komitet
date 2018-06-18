@@ -11,4 +11,4 @@ class InviteUserToKomitetForm(forms.Form):
     )
 
 
-InviteUserFormSet = forms.formset_factory(InviteUserToKomitetForm)
+InviteUserFormSet = forms.formset_factory(InviteUserToKomitetForm, extra=2)
