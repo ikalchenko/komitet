@@ -53,6 +53,7 @@ class SignUpView(generic.CreateView):
     def form_valid(self, form):
         user = form.save(commit=False)
         user.is_active = False
+        user.email = form.cleaned_data['email']
         user.save()
         send_confirmation_email(self.request, user, form.cleaned_data['email'])
         return render(

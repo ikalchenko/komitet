@@ -4,7 +4,7 @@ from django.db import models
 
 class UserProfile(models.Model):
     user = models.OneToOneField(auth_models.User, on_delete=models.CASCADE, default=None)
-    photo = models.ImageField()
+    photo = models.ImageField(null=True, blank=True)
 
 
 class UserPermissions(models.Model):

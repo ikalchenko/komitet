@@ -71,3 +71,8 @@ html, body {
 .komitets-list :not(.active-komitet) img {
     margin-left: 15px;
 }
+
+.small-photo {
+  height: 50px;
+  width: 50px;
+}

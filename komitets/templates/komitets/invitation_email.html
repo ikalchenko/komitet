@@ -1,0 +1,7 @@
+{% autoescape off %}
+Hi!
+
+You have been invited by {{ user.username }} to Komitet, for more information check out link below
+
+http://{{ domain }}{% url 'komitets:komitet-detail' pk=pk %}
+{% endautoescape %}

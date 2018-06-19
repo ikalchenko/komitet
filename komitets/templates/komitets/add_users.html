@@ -1,0 +1,26 @@
+{% extends 'komitets/app_base.html' %}
+
+{% load static %}
+
+{% block komitet-detail %}
+    <h3>Invite users to Komitet</h3>
+    <form method="post">
+        {% csrf_token %}
+        <h4>Email: </h4>
+        {{ form.management_form }}
+        {% for f in form %}
+            <div id="inputs">
+                <div class="row mb-3">
+                    {{ f }}
+                    <button type="button" id="rmBtn" class="btn btn-danger m-auto" onclick="delRequest(this)"><i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="row" id="buttonsDiv">
+                <button type="button" id="addBtn" class="btn btn-success m-auto"><i class="fas fa-plus"></i></button>
+                <button type="submit" class="btn btn-success m-auto">Invite</button>
+            </div>
+        {% endfor %}
+    </form>
+    <script type="application/javascript" src="{% static 'komitets/js/formset.js' %}"></script>
+{% endblock %}
