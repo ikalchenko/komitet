@@ -13,4 +13,3 @@ def send_invitation_email(request, to_emails, pk):
     })
     email = EmailMessage(mail_subject, message, to=to_emails)
     email.send()
-

@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.urls import reverse
 from django.views import generic
 
@@ -19,7 +19,7 @@ class MainView(generic.ListView):
         return data
 
     def get_queryset(self):
-        return Committee.objects.filter(members__id=self.request.user.id)
+        return Committee.objects.committees()
 
 
 class KomitetDetailView(generic.DetailView):
@@ -29,8 +29,10 @@ class KomitetDetailView(generic.DetailView):
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data()
-        data['komitets'] = Committee.objects.filter(members__id=self.request.user.id)
+        data['komitets'] = Committee.objects.committees(user=self.request.user)
+        data['users'] = self.object.get_not_banned()
         data['user'] = self.request.user
+        data['admins'] = self.object.get_admins()
         return data
 
 
@@ -39,11 +41,12 @@ class CreateKomitetView(generic.FormView):
     form_class = CreateKomitetForm
 
     def form_valid(self, form):
-        print(form.cleaned_data)
+        image = self.request.FILES['image'] if 'image' in self.request.FILES\
+            else None
         komitet = Committee(
             title=form.cleaned_data['title'],
             description=form.cleaned_data['description'],
-            photo=self.request.FILES['photo']
+            image=image
         )
         komitet.save()
         komitet.refresh_from_db()
@@ -60,7 +63,7 @@ class CreateKomitetView(generic.FormView):
     def get_context_data(self, **kwargs):
         data = super().get_context_data()
         user = self.request.user
-        data['komitets'] = Committee.objects.filter(members__id=user.id)
+        data['komitets'] = Committee.objects.committees()
         data['user'] = user
         return data
 
@@ -72,22 +75,41 @@ class AddUsersView(generic.FormView):
     def get_context_data(self, **kwargs):
         data = super().get_context_data()
         user = self.request.user
-        data['komitets'] = Committee.objects.filter(members__id=user.id)
-        data['komitet'] = Committee.objects.get(pk=self.kwargs.get('pk'))
+        committee = Committee.objects.get(pk=self.kwargs.get('pk'))
+        users = committee.members.all()
+        data['komitets'] = Committee.objects.committees()
+        data['komitet'] = committee
         data['user'] = user
+        data['users'] = users
+        data['admins'] = committee.get_admins()
         return data
 
     def form_valid(self, formset):
-        emails_to_invite = []
-        for data in formset.cleaned_data:
-            print(data)
-            try:
-                user = User.objects.get(email=data['email'])
-                committee = Committee.objects.get(pk=self.kwargs['pk'])
-                committee.members.add(user, permission='RW')
-            except User.DoesNotExist:
-                emails_to_invite.append(data['email'])
-        if emails_to_invite:
-            send_invitation_email(self.request, emails_to_invite, self.kwargs['pk'])
-
-
+        committee = Committee.objects.get(pk=self.kwargs['pk'])
+        if self.request.user in committee.get_writers():
+            emails_to_invite = []
+            for data in formset.cleaned_data:
+                try:
+                    user = User.objects.get(email=data['email'])
+                    try:
+                        UserPermissions.objects\
+                            .get(user=user.id, committee=committee.id)
+                    except UserPermissions.DoesNotExist:
+                        UserPermissions.objects.create(
+                            user=user,
+                            committee=committee,
+                            permission='RW'
+                        )
+                except User.DoesNotExist:
+                    emails_to_invite.append(data['email'])
+            if emails_to_invite:
+                send_invitation_email(
+                    self.request,
+                    emails_to_invite,
+                    self.kwargs['pk']
+                )
+            return HttpResponseRedirect(reverse(
+                'komitets:komitet-detail',
+                kwargs={'pk': committee.id}
+            ))
+        return HttpResponseForbidden()

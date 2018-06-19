@@ -62,6 +62,12 @@ html, body {
     background: #eeeeee;
 }
 
+.komitet-users {
+    overflow-y: auto;
+    height: calc(100vh - 56px);
+    background: #dddddd;
+}
+
 .active-komitet::before {
     content: "● ";
     text-decoration: none;
@@ -75,4 +81,14 @@ html, body {
 .small-photo {
   height: 50px;
   width: 50px;
+}
+
+.to-bottom {
+  position: absolute;
+  bottom: 20px;
+  right: 20px
+}
+
+.centered-username {
+  line-height: 58px;
 }

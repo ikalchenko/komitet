@@ -6,9 +6,25 @@ from . import views
 
 app_name = 'komitets'
 urlpatterns = [
-    path('', login_required(views.MainView.as_view()), name='main'),
-    path('<int:pk>', login_required(views.KomitetDetailView.as_view()), name='komitet-detail'),
-    path('<int:pk>/add-users', login_required(views.AddUsersView.as_view()), name='komitet-add-users'),
-    path('new-komitet', login_required(views.CreateKomitetView.as_view()), name='create-komitet'),
+    path(
+        '',
+        login_required(views.MainView.as_view()),
+        name='main'
+    ),
+    path(
+        '<int:pk>',
+        login_required(views.KomitetDetailView.as_view()),
+        name='komitet-detail'
+    ),
+    path(
+        '<int:pk>/add-users',
+        login_required(views.AddUsersView.as_view()),
+        name='komitet-add-users'
+    ),
+    path(
+        'new-komitet',
+        login_required(views.CreateKomitetView.as_view()),
+        name='create-komitet'
+    ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) \
               + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
