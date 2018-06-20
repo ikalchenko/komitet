@@ -1,0 +1,35 @@
+{% extends 'komitets/app_base.html' %}
+{% load static %}
+
+{% block komitet-detail %}
+    <h3 class="mt-3">Add {{ type }} card</h3>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        {% if type == 'MOPOLL' or type == 'MAPOLL' %}
+            <h4>Answer options</h4>
+            {{ formset.management_form }}
+            <div id="inputs">
+                {% for frm in formset %}
+                    <div class="row mb-3">
+                        {{ frm }}
+                        <button type="button" id="rmBtn"
+                                class="btn btn-danger m-auto"
+                                onclick="delRequest(this)"><i
+                                class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="row mb-3">
+                <button type="button" id="addBtn"
+                        class="btn btn-success ml-3"><i
+                        class="fas fa-plus"></i></button>
+            </div>
+            <script type="application/javascript"
+                    src="{% static 'cards/js/formset.js' %}"></script>
+        {% endif %}
+        <button type="submit" class="btn btn-success">Add card</button>
+    </form>
+
+{% endblock %}

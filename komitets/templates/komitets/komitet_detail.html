@@ -1,21 +1,192 @@
 {% extends 'komitets/app_base.html' %}
+{% load static %}
 
 {% block komitet-detail %}
     <div class="komitet-head">
-    </div>
-    <div class="card mt-3 mb-2" style="
-            background: url('{{ MEDIA_URL }}/media/{{ komitet.image }}') center;
-            background-size: cover;
-            height: 300px">
-        <div class="card-body">
-            <h5 class="card-title">{{ komitet.title }}</h5>
-            <p class="card-text">{{ komitet.description }}</p>
-            <div class="to-bottom">
-                <a href="#" class="btn btn-danger float-right"><i class="fas fa-trash"></i> Delete komitet</a>
-                <a href="#" class="btn btn-success float-right  mr-3"><i class="fas fa-plus"></i> Invite users</a>
-                <a href="#" class="btn btn-outline-primary float-right  mr-3"><i class="fas fa-plus"></i></a>
+        <div class="card mt-3 mb-2" style="
+                background: url('{{ MEDIA_URL }}/media/{{ komitet.image }}') center;
+                background-size: cover;
+                height: 300px">
+            <div class="card-body">
+                <h5 class="card-title">{{ komitet.title }}</h5>
+                <p class="card-text">{{ komitet.description }}</p>
+                <div class="to-bottom row">
+                    {% if user in admins %}
+                        <a href="#" class="btn btn-danger float-right mr-3"><i
+                                class="fas fa-trash"></i> Delete
+                            komitet</a>
+                    {% endif %}
+                    {% if user in writers %}
+                        <a href="{% url 'komitets:komitet-add-users' pk=komitet.pk %}"
+                           class="btn btn-success float-right  mr-3"><i
+                                class="fas fa-plus"></i> Invite users</a>
+                        <div class="dropdown">
+                            <a class="btn btn-primary float-right mr-3"
+                               href="#" role="button" id="addCardDropdown"
+                               data-toggle="dropdown" aria-haspopup="true"
+                               aria-expanded="false"><i
+                                    class="fas fa-plus"></i> Add card</a>
+                            <div class="dropdown-menu"
+                                 aria-labelledby="addCardDropdown">
+                                <a class="dropdown-item"
+                                   href="{% url 'cards:add-card' pk=komitet.id %}?type=ANNOUNCE">
+                                    Announcement</a>
+                                <a class="dropdown-item"
+                                   href="{% url 'cards:add-card' pk=komitet.id %}?type=PAY">
+                                    Payment</a>
+                                <a class="dropdown-item"
+                                   href="{% url 'cards:add-card' pk=komitet.id %}?type=YNPOLL">
+                                    Yes | No
+                                    vote</a>
+                                <a class="dropdown-item"
+                                   href="{% url 'cards:add-card' pk=komitet.id %}?type=MAPOLL">
+                                    Multi-answers vote</a>
+                                <a class="dropdown-item"
+                                   href="{% url 'cards:add-card' pk=komitet.id %}?type=MOPOLL">
+                                    Multi-options vote</a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
+    {% for card in cards %}
+        <div class="card mt-3 mb-2">
+            <div class="card-body">
+                <h5 class="card-title">{{ card.title }}</h5>
+                <p class="card-text">{{ card.text }}</p>
+                {% if card.type != 'ANNOUNCE' %}
+                    <form method="post">
+                    {% csrf_token %}
+                    {% if card.type == 'YNPOLL' %}
+                        <input type="hidden" name="{{ card.id }}"
+                               value="">
+                        <button type="button"
+                                class="btn btn-danger float-right"
+                                value="no"
+                                onclick="vote(this)"><i
+                                class="fas fa-times"></i> Decline
+                        </button>
+                        <button type="button"
+                                class="btn btn-success float-right mr-3"
+                                onclick="vote(this)"
+                                value="yes"><i
+                                class="fas fa-check"></i> Accept
+                        </button>
+
+                    {% endif %}
+                    {% if card.type == 'MOPOLL' %}
+                        {% for option in options %}
+                            {% if option.card == card %}
+                                <div class="radio">
+                                    <label><input type="radio"
+                                                  name="{{ card.id }}"
+                                                  value="{{ option.id }}"> {{ option.answer_content }}
+                                    </label>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                        <button type="submit"
+                                class="btn btn-primary float-right mr-3"><i
+                                class="fas fa-check"></i> Vote
+                        </button>
+                    {% endif %}
+                    {% if card.type == 'MAPOLL' %}
+                        {% for option in options %}
+                            {% if option.card == card %}
+                                <div class="radio">
+                                    <label><input type="checkbox"
+                                                  name="{{ card.id }}"
+                                                  value="{{ option.id }}"> {{ option.answer_content }}
+                                    </label>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                        <button type="submit"
+                                class="btn btn-primary float-right mr-3"><i
+                                class="fas fa-check"></i> Vote
+                        </button>
+                    {% endif %}
+                {% endif %}
+                </form>
+            </div>
+        </div>
+        <script type="application/javascript"
+                src="{% static 'komitets/js/vote.js' %}"></script>
+
+    {% endfor %}
+    {#            <div class="card mt-3 mb-2">#}
+    {#                <div class="card-body">#}
+    {#                    <h5 class="card-title">Title</h5>#}
+    {#                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Et exercitationem id#}
+    {#                        ipsa perspiciatis, repellendus saepe? Error, hic quam? Accusantium aspernatur illum ipsum iste,#}
+    {#                        labore nam placeat suscipit tempora unde voluptatem.</p>#}
+    {#                    <form action="" method="post">#}
+    {#                        <a href="#" class="btn btn-danger float-right"><i class="fas fa-times"></i> Decline</a>#}
+    {#                        <a href="#" class="btn btn-success float-right mr-3"><i class="fas fa-check"></i> Accept</a>#}
+    {#                    </form>#}
+    {#                </div>#}
+    {#            </div>#}
+    {#            <div class="card mt-2 mb-3">#}
+    {#                <div class="card-body">#}
+    {#                    <h5 class="card-title">Title</h5>#}
+    {#                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Et exercitationem id#}
+    {#                        ipsa perspiciatis, repellendus saepe? Error, hic quam? Accusantium aspernatur illum ipsum iste,#}
+    {#                        labore nam placeat suscipit tempora unde voluptatem.</p>#}
+    {#                    <form action="" method="post">#}
+    {#                        <a href="#" class="btn btn-primary float-right"><i class="far fa-credit-card"></i> Pay</a>#}
+    {#                        <a href="#" class="btn btn-light float-right mr-3"><i class="fas fa-money-bill"></i> Pay#}
+    {#                            cash</a>#}
+    {#                    </form>#}
+    {#                </div>#}
+    {#            </div>#}
+    {#            <div class="card mt-2 mb-3">#}
+    {#                <div class="card-body">#}
+    {#                    <h5 class="card-title">Title</h5>#}
+    {#                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Et exercitationem id#}
+    {#                        ipsa perspiciatis, repellendus saepe? Error, hic quam? Accusantium aspernatur illum ipsum iste,#}
+    {#                        labore nam placeat suscipit tempora unde voluptatem.</p>#}
+    {#                </div>#}
+    {#            </div>#}
+    {#            <div class="card mt-2 mb-3">#}
+    {#                <div class="card-body">#}
+    {#                    <h5 class="card-title">Title</h5>#}
+    {#                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Et exercitationem id#}
+    {#                        ipsa perspiciatis, repellendus saepe? Error, hic quam? Accusantium aspernatur illum ipsum iste,#}
+    {#                        labore nam placeat suscipit tempora unde voluptatem.</p>#}
+    {#                    <form action="" method="post">#}
+    {#                        <div class="radio">#}
+    {#                            <label><input type="radio" name="choice">Option 1</label>#}
+    {#                        </div>#}
+    {#                        <div class="radio">#}
+    {#                            <label><input type="radio" name="choice">Option 2</label>#}
+    {#                        </div>#}
+    {#                        <div class="radio">#}
+    {#                            <label><input type="radio" name="choice">Option 2</label>#}
+    {#                        </div>#}
+    {#                        <a href="#" class="btn btn-primary float-right mr-3"><i class="fas fa-check"></i> Vote</a>#}
+    {#                    </form>#}
+    {#                </div>#}
+    {#            </div>#}
+    {#            <div class="card mt-2 mb-5">#}
+    {#                <div class="card-body">#}
+    {#                    <h5 class="card-title">Title</h5>#}
+    {#                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Et exercitationem id#}
+    {#                        ipsa perspiciatis, repellendus saepe? Error, hic quam? Accusantium aspernatur illum ipsum iste,#}
+    {#                        labore nam placeat suscipit tempora unde voluptatem.</p>#}
+    {#                    <form action="" method="post">#}
+    {#                        <div class="radio">#}
+    {#                            <label><input type="checkbox" name="check">Option 1</label>#}
+    {#                        </div>#}
+    {#                        <div class="radio">#}
+    {#                            <label><input type="checkbox" name="check">Option 2</label>#}
+    {#                        </div>#}
+    {#                        <div class="radio">#}
+    {#                            <label><input type="checkbox" name="check">Option 2</label>#}
+    {#                        </div>#}
+    {#                        <a href="#" class="btn btn-primary float-right mr-3"><i class="fas fa-check"></i> Vote</a>#}
+    {#                    </form>#}
+    {#                </div>#}
 
 {% endblock %}
