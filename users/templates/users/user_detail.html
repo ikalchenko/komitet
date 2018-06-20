@@ -1,0 +1,19 @@
+{% extends 'komitets/app_base.html' %}
+{% load static %}
+
+{% block komitet-detail %}
+    <div class="ml-3 mt-3">
+        <div class="row">
+            <h2>{{ user_profile.get_name }}</h2>
+            {% if user_profile == user %}
+                <div><a href="{% url 'users:user-edit' pk=user_profile.id %}" class="btn btn-primary ml-3">Edit</a></div>
+            {% endif %}
+            <img src="{{ MEDIA_URL }}/media/{{ user_info.photo }}" alt="">
+        </div>
+        <div class="row">Username: {{ user_profile.username }}</div>
+        <div class="row">Email: {{ user_profile.email }}</div>
+        <div class="row">Last login: {{ user_profile.last_login }}</div>
+        <div class="row">Joined: {{ user_profile.date_joined }}</div>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends 'komitets/app_base.html' %}
+{% load static %}
+
+{% block komitet-detail %}
+    <div class="ml-3 mt-3">
+        <div class="row">
+            <h2>Edit {{ user_profile.get_name }}</h2>
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-success">Confirm</button>
+        </form>
+    </div>
+
+{% endblock %}

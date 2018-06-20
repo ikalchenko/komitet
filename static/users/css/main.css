@@ -1,5 +1,8 @@
 @import url('https://fonts.googleapis.com/css?family=Indie+Flower');
 
+html, body {
+    overflow-y: auto;
+}
 
 .logo {
     font-family: 'Indie Flower', cursive;

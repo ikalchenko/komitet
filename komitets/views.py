@@ -48,7 +48,6 @@ class KomitetDetailView(generic.DetailView):
 
     def post(self, request, *args, **kwargs):
         post = dict(request.POST)
-        print(post)
         del post['csrfmiddlewaretoken']
         for key, value in post.items():
             card = Card.objects.get(pk=int(key))
@@ -70,8 +69,6 @@ class KomitetDetailView(generic.DetailView):
             'komitets:komitet-detail',
             kwargs={'pk': kwargs['pk']}
         ))
-
-
 
 
 class CreateKomitetView(generic.FormView):
@@ -139,6 +136,8 @@ class AddUsersView(generic.FormView):
                         )
                 except User.DoesNotExist:
                     emails_to_invite.append(data['email'])
+                except KeyError:
+                    pass
             if emails_to_invite:
                 send_invitation_email(
                     self.request,

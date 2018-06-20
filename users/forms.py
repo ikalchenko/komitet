@@ -73,3 +73,19 @@ class ResetPasswordForm(auth_form.SetPasswordForm):
         label='Confirm new password',
         widget=forms.PasswordInput(attrs={'class': 'form-control', })
     )
+
+
+class EditUserForm(forms.ModelForm):
+    first_name = forms.CharField(
+        widget=forms.TextInput(attrs={'class': 'form-control', })
+    )
+    last_name = forms.CharField(
+        widget=forms.TextInput(attrs={'class': 'form-control', })
+    )
+    username = auth_form.UsernameField(
+        widget=forms.TextInput(attrs={'class': 'form-control', })
+    )
+
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'username']

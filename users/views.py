@@ -9,9 +9,10 @@ from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
 from django.views import generic
 
+from komitets.models import Committee
 from .utils import send_confirmation_email
 from .forms import LogInForm, SignUpForm, \
-    RequestResetPasswordForm, ResetPasswordForm
+    RequestResetPasswordForm, ResetPasswordForm, EditUserForm
 from .tokens import account_activation_token as aat, \
     password_reset_token as prt
 
@@ -162,3 +163,33 @@ class ResetPasswordView(generic.FormView):
     # def form_invalid(self, form):
     #     print('invalid')
     #     return super().form_invalid(form)
+
+
+class UserDetailView(generic.DetailView):
+    model = User
+    template_name = 'users/user_detail.html'
+    context_object_name = 'user_profile'
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data()
+        user = self.request.user
+        data['komitets'] = Committee.objects.committees(user=user)
+        data['user'] = user
+        data['user_info'] = user.userprofile
+        return data
+
+
+class EditUserView(generic.UpdateView):
+    model = User
+    form_class = EditUserForm
+    template_name = 'users/user_edit.html'
+
+    def get_success_url(self):
+        return reverse('users:user-detail', kwargs={'pk': self.request.user.id})
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data()
+        user = self.request.user
+        data['komitets'] = Committee.objects.committees(user=user)
+        data['user'] = user
+        data['user_info'] = user.userprofile
+        return data
