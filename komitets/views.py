@@ -1,14 +1,14 @@
 from django.contrib.auth.models import User
-from django.http import HttpResponseRedirect
-from django.urls import reverse
-from django.views import generic
 from django.core.exceptions import PermissionDenied
+from django.http import HttpResponseRedirect
+from django.urls import reverse, reverse_lazy
+from django.views import generic
 
 from cards.models import Card, AnswerOption, Answer
 from users.models import UserPermissions
-from .utils import send_invitation_email
 from .forms import CreateKomitetForm, InviteUserFormSet
 from .models import Committee
+from .utils import send_invitation_email
 
 
 class MainView(generic.ListView):
@@ -48,6 +48,16 @@ class KomitetDetailView(generic.DetailView):
     def post(self, request, *args, **kwargs):
         post = dict(request.POST)
         del post['csrfmiddlewaretoken']
+        if 'user-management' in post:
+            del post['user-management']
+            for key, value in post.items():
+                user = User.objects.get(pk=int(key))
+                committee = Committee.objects.get(pk=self.kwargs['pk'])
+                user.set_permission(committee, value[0])
+                return HttpResponseRedirect(reverse(
+                    'komitets:komitet-detail',
+                    kwargs={'pk': kwargs['pk']}
+                ))
         answers_to_save = []
         key_to_delete = ''
         for key, value in post.items():
@@ -155,3 +165,21 @@ class AddUsersView(generic.FormView):
                 kwargs={'pk': committee.id}
             ))
         raise PermissionDenied
+
+
+class DeleteKomitetView(generic.DeleteView):
+    model = Committee
+    template_name = 'komitets/delete.html'
+    success_url = reverse_lazy('komitets:main')
+    context_object_name = 'komitet'
+
+    def get_context_data(self, **kwargs):
+        if self.request.user in self.object.get_admins():
+            data = super().get_context_data()
+            user = self.request.user
+            data['komitets'] = Committee.objects.committees(user=user)
+            data['user'] = user
+            data['users'] = self.object.get_not_banned()
+            return data
+        raise PermissionDenied
+

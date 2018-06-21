@@ -3,26 +3,35 @@
     {% load static %}
     <div class="container-fluid without-margins">
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <a class="navbar-brand" href="{% url 'komitets:main' %}">Komitet</a>
-            <a href="{% url 'komitets:create-komitet' %}" class="btn btn-success ml-auto mr-3 btn-sm"><i
+            <a class="navbar-brand"
+               href="{% url 'komitets:main' %}">Komitet</a>
+            <a href="{% url 'komitets:create-komitet' %}"
+               class="btn btn-success ml-auto mr-3 btn-sm"><i
                     class="fas fa-plus"></i>
                 Add Komitet</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-toggle="collapse"
+                    data-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav ml-auto mr-5">
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" href="#"
+                           id="navbarDropdown" role="button"
+                           data-toggle="dropdown" aria-haspopup="true"
+                           aria-expanded="false">
                             {{ user.get_name }}
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="{% url 'users:user-detail' pk=user.id %}">Profile</a>
+                        <div class="dropdown-menu dropdown-menu-right"
+                             aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item"
+                               href="{% url 'users:user-detail' pk=user.id %}">Profile</a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="{% url 'users:logout' %}">Log out</a>
+                            <a class="dropdown-item"
+                               href="{% url 'users:logout' %}">Log out</a>
                         </div>
                     </li>
                 </ul>
@@ -34,13 +43,15 @@
             <div class="komitets-list">
                 {% for kom in komitets %}
                     {% if kom.id == komitet.id %}
-                        <a href="{% url 'komitets:komitet-detail' pk=komitet.id %}" class="active-komitet"><img
+                        <a href="{% url 'komitets:komitet-detail' pk=komitet.id %}"
+                           class="active-komitet"><img
                                 {% if kom.image %}
                                     src="/media/{{ kom.image }}"
                                 {% else %}
                                     src="http://via.placeholder.com/50?text={{ kom.title|make_list|slice:':2'|join:''|upper }}"
                                 {% endif %}
-                                    class="rounded-circle mb-1 mt-1 small-photo" alt=""></a>
+                                    class="rounded-circle mb-1 mt-1 small-photo"
+                                    alt=""></a>
                     {% else %}
                         <a href="{% url 'komitets:komitet-detail' pk=kom.id %}"><img
                                 {% if kom.image %}
@@ -48,7 +59,8 @@
                                 {% else %}
                                     src="http://via.placeholder.com/50?text={{ kom.title|make_list|slice:':2'|join:''|upper }}"
                                 {% endif %}
-                                    class="rounded-circle mb-1 mt-1 small-photo" alt=""></a>
+                                    class="rounded-circle mb-1 mt-1 small-photo"
+                                    alt=""></a>
 
                     {% endif %}
 
@@ -57,23 +69,66 @@
             <div class="komitet-users col-2">
                 {% block komitet-users %}
                     {% for usr in users %}
-                        <a href="#" class="row">
-                            <img
-                                    {% if usr.photo %}
-                                        src="{{ MEDIA_URL }}/media/{{ usr.photo }}"
-                                    {% else %}
-                                        src="http://via.placeholder.com/50?text={{ usr.get_name|make_list|slice:':2'|join:''|upper }}"
-                                    {% endif %}
-                                        class="rounded-circle ml-2 mb-1 mt-1 small-photo" alt="">
-                            <div class="centered-username ml-2">
-                                {{ usr.get_name }}{% if usr in admins %}<i class="fas fa-star"></i>{% endif %}</div>
-                        </a>
+                        <div class="dropdown">
+                            <button class="btn btn-link p-0"
+                                    type="button" id="user{{ usr.id }}"
+                                    data-toggle="dropdown" aria-haspopup="true"
+                                    aria-expanded="false">
+                                <img
+                                        {% if usr.photo %}
+                                            src="{{ MEDIA_URL }}/media/{{ usr.photo }}"
+                                        {% else %}
+                                            src="http://via.placeholder.com/50?text={{ usr.get_name|make_list|slice:':2'|join:''|upper }}"
+                                        {% endif %}
+                                            class="rounded-circle ml-2 mb-1 mt-1 small-photo"
+                                            alt="">
+                                <span class="centered-username ml-2">
+                                    {{ usr.get_name }}{% if usr in admins %}
+                                        <i class="fas fa-star"></i>{% endif %}
+                                </span>
+                            </button>
+                            <div class="dropdown-menu"
+                                 aria-labelledby="user{{ usr.id }}">
+                                <a class="dropdown-item"
+                                   href="{% url 'users:user-detail' pk=usr.id %}">Profile</a>
+                                {% if user in komitet.get_admins %}
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        <div class="dropdown-divider"></div>
+                                        <input type="hidden"
+                                               name="user-management"
+                                               value="True">
+                                        <input type="hidden"
+                                               name="{{ usr.id }}">
+                                        <button class="dropdown-item" value="A"
+                                                onclick="manageUser(this)">Make
+                                            admin
+                                        </button>
+                                        <button class="dropdown-item" value="RW"
+                                                onclick="manageUser(this)">Allow read/write
+                                        </button>
+                                        <button class="dropdown-item" value="R"
+                                                onclick="manageUser(this)">
+                                            Forbid write
+                                        </button>
+                                        <button class="dropdown-item" value="B"
+                                                onclick="manageUser(this)">Ban
+                                        </button>
+
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </div>
                     {% endfor %}
+                    <script type="application/javascript"
+                            src="{% static 'komitets/js/manage_users.js' %}"></script>
                 {% endblock %}
             </div>
             <div class="komitet-main col-5">
                 {% block komitet-detail %}
-                    <div class="mt-5 ml-5"><h2><i class="fas fa-angle-left"></i> Choose Komitet</h2></div>
+                    <div class="mt-5 ml-5"><h2><i
+                            class="fas fa-angle-left"></i> Choose Komitet</h2>
+                    </div>
                 {% endblock %}
             </div>
         </div>

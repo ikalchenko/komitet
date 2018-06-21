@@ -1,0 +1,11 @@
+{% extends 'komitets/app_base.html' %}
+
+
+{% block komitet-detail %}
+    <h3 class="mt-5 mb-5">Are you sure want to delete komitet {{ komitet.title }}</h3>
+    <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Confirm</button>
+        <a class="btn btn-secondary" href="{% url 'komitets:komitet-detail' pk=komitet.id %}">Back</a>
+    </form>
+{% endblock %}

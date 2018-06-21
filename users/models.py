@@ -21,7 +21,13 @@ class UserPermissions(models.Model):
     user = models.ForeignKey(auth_models.User, on_delete=models.CASCADE)
     committee = models.ForeignKey('komitets.Committee',
                                   on_delete=models.CASCADE)
-    permission = models.CharField(max_length=2, choices=PERMISSIONS)
+    permission = models.CharField(max_length=10, choices=PERMISSIONS)
+
+
+def set_permission(self, committee, permission):
+    user_permission = UserPermissions.objects.get(user=self, committee=committee)
+    user_permission.permission = permission
+    user_permission.save()
 
 
 def get_name(self):
@@ -31,3 +37,4 @@ def get_name(self):
 
 
 auth_models.User.add_to_class('get_name', get_name)
+auth_models.User.add_to_class('set_permission', set_permission)

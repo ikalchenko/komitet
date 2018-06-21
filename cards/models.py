@@ -19,12 +19,15 @@ class Card(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
-    def is_voted_by(self, user):
+    def voted_by(self, user):
         answers = Answer.objects.filter(answer_option__card=self)
         answers = answers.filter(user_id=user)
-        if len(answers) != 0:
-            return True
+        if answers:
+            return answers
         return False
+
+    def get_all_answers_count(self):
+        return Answer.objects.filter(answer_option__card=self).count()
 
 
 class Answer(models.Model):
@@ -39,7 +42,3 @@ class AnswerOption(models.Model):
 
     def get_amount(self):
         return self.answer_set.count()
-
-# class Attachment(models.Model):
-#     card = models.ForeignKey(Card)
-#     file = models.FileField()

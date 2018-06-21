@@ -1,6 +1,7 @@
 {% extends 'komitets/app_base.html' %}
 {% load static %}
 {% load custom_tags %}
+{% load mathfilters %}
 
 {% block komitet-detail %}
     <div class="komitet-head">
@@ -13,7 +14,7 @@
                 <p class="card-text">{{ komitet.description }}</p>
                 <div class="to-bottom row">
                     {% if user in admins %}
-                        <a href="#" class="btn btn-danger float-right mr-3"><i
+                        <a href="{% url 'komitets:komitet-delete' pk=komitet.id %}" class="btn btn-danger float-right mr-3"><i
                                 class="fas fa-trash"></i> Delete
                             komitet</a>
                     {% endif %}
@@ -57,70 +58,94 @@
             <div class="card-body">
                 <h5 class="card-title">{{ card.title }}</h5>
                 <p class="card-text">{{ card.text }}</p>
-            {% if card|is_voted_by:user.id %}
-                        <div>already voted</div>
+                {% with answers=card|voted_by:user.id %}
+                    {% if answers %}
+                        {% for option in options %}
+                            {% if option.card == card %}
+                                <div class="row">
+                                    {% if answers|have_user:user and answers|have_option:option %}
+                                        <div class="col-3 ml-3">
+                                            <b>{{ option.answer_content }}</b>
+                                        </div>
+                                    {% else %}
+                                        <div class="col-3 ml-3">{{ option.answer_content }}</div>
+                                    {% endif %}
+                                    <div class="progress mb-2 col-8 p-0 ">
+                                        <div class="progress-bar"
+                                             role="progressbar"
+                                             style="width: {{ 100|mul:option.get_amount|div:card.get_all_answers_count }}%">
+                                            {{ option.get_amount }}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                        <div class="float-right">Votes: {{ card.get_all_answers_count }}</div>
+
+                    {% else %}
+                        {% if card.type != 'ANNOUNCE' %}
+                            <form method="post">
+                            {% csrf_token %}
+
+                            {% if card.type == 'YNPOLL' %}
+                                <input type="hidden" name="{{ card.id }}"
+                                       value="">
+                                <button type="button"
+                                        class="btn btn-danger float-right"
+                                        value="no"
+                                        onclick="vote(this)"><i
+                                        class="fas fa-times"></i> Decline
+                                </button>
+                                <button type="button"
+                                        class="btn btn-success float-right mr-3"
+                                        onclick="vote(this)"
+                                        value="yes"><i
+                                        class="fas fa-check"></i> Accept
+                                </button>
+
+                            {% endif %}
+                            {% if card.type == 'MOPOLL' %}
+                                {% for option in options %}
+                                    {% if option.card == card %}
+                                        <div class="radio">
+                                            <label><input type="radio"
+                                                          name="{{ card.id }}"
+                                                          value="{{ option.id }}"> {{ option.answer_content }}
+                                            </label>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                                <button type="submit"
+                                        class="btn btn-primary float-right mr-3">
+                                    <i
+                                            class="fas fa-check"></i> Vote
+                                </button>
+                            {% endif %}
+                            {% if card.type == 'MAPOLL' %}
+                                {% for option in options %}
+                                    {% if option.card == card %}
+                                        <div class="radio">
+                                            <label><input type="checkbox"
+                                                          name="{{ card.id }}"
+                                                          value="{{ option.id }}"> {{ option.answer_content }}
+                                            </label>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                                <button type="submit"
+                                        class="btn btn-primary float-right mr-3">
+                                    <i class="fas fa-check"></i> Vote
+                                </button>
+                            {% endif %}
                         {% endif %}
-                {% if card.type != 'ANNOUNCE' %}
-                    <form method="post">
-                    {% csrf_token %}
-
-                    {% if card.type == 'YNPOLL' %}
-                        <input type="hidden" name="{{ card.id }}"
-                               value="">
-                        <button type="button"
-                                class="btn btn-danger float-right"
-                                value="no"
-                                onclick="vote(this)"><i
-                                class="fas fa-times"></i> Decline
-                        </button>
-                        <button type="button"
-                                class="btn btn-success float-right mr-3"
-                                onclick="vote(this)"
-                                value="yes"><i
-                                class="fas fa-check"></i> Accept
-                        </button>
-
                     {% endif %}
-                    {% if card.type == 'MOPOLL' %}
-                        {% for option in options %}
-                            {% if option.card == card %}
-                                <div class="radio">
-                                    <label><input type="radio"
-                                                  name="{{ card.id }}"
-                                                  value="{{ option.id }}"> {{ option.answer_content }}
-                                    </label>
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-                        <button type="submit"
-                                class="btn btn-primary float-right mr-3"><i
-                                class="fas fa-check"></i> Vote
-                        </button>
-                    {% endif %}
-                    {% if card.type == 'MAPOLL' %}
-                        {% for option in options %}
-                            {% if option.card == card %}
-                                <div class="radio">
-                                    <label><input type="checkbox"
-                                                  name="{{ card.id }}"
-                                                  value="{{ option.id }}"> {{ option.answer_content }}
-                                    </label>
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-                        <button type="submit"
-                                class="btn btn-primary float-right mr-3"><i
-                                class="fas fa-check"></i> Vote
-                        </button>
-                    {% endif %}
-                {% endif %}
+                {% endwith %}
                 </form>
             </div>
         </div>
-        <script type="application/javascript"
-                src="{% static 'komitets/js/vote.js' %}"></script>
-
     {% endfor %}
+    <script type="application/javascript"
+            src="{% static 'komitets/js/vote.js' %}"></script>
     {#            <div class="card mt-3 mb-2">#}
     {#                <div class="card-body">#}
     {#                    <h5 class="card-title">Title</h5>#}

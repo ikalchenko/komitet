@@ -22,6 +22,11 @@ urlpatterns = [
         name='komitet-add-users'
     ),
     path(
+        '<int:pk>/delete',
+        login_required(views.DeleteKomitetView.as_view()),
+        name='komitet-delete'
+    ),
+    path(
         'new-komitet',
         login_required(views.CreateKomitetView.as_view()),
         name='create-komitet'

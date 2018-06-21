@@ -2,6 +2,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView, \
     LogoutView, PasswordResetView
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse_lazy, reverse
@@ -186,10 +187,13 @@ class EditUserView(generic.UpdateView):
 
     def get_success_url(self):
         return reverse('users:user-detail', kwargs={'pk': self.request.user.id})
+
     def get_context_data(self, **kwargs):
-        data = super().get_context_data()
-        user = self.request.user
-        data['komitets'] = Committee.objects.committees(user=user)
-        data['user'] = user
-        data['user_info'] = user.userprofile
-        return data
+        if self.kwargs['pk'] == self.request.user.id:
+            data = super().get_context_data()
+            user = self.request.user
+            data['komitets'] = Committee.objects.committees(user=user)
+            data['user'] = user
+            data['user_info'] = user.userprofile
+            return data
+        raise PermissionDenied
