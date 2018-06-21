@@ -1,11 +1,10 @@
 from django.contrib.auth.models import User
-from django.db.models import F
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.views import generic
 from django.core.exceptions import PermissionDenied
 
-from cards.models import Card, AnswerOption
+from cards.models import Card, AnswerOption, Answer
 from users.models import UserPermissions
 from .utils import send_invitation_email
 from .forms import CreateKomitetForm, InviteUserFormSet
@@ -49,6 +48,8 @@ class KomitetDetailView(generic.DetailView):
     def post(self, request, *args, **kwargs):
         post = dict(request.POST)
         del post['csrfmiddlewaretoken']
+        answers_to_save = []
+        key_to_delete = ''
         for key, value in post.items():
             card = Card.objects.get(pk=int(key))
             if card.type == 'YNPOLL':
@@ -56,15 +57,20 @@ class KomitetDetailView(generic.DetailView):
                     card=card,
                     answer_content=value[0]
                 )
-                option.amount += 1
-                option.save()
-                return HttpResponseRedirect(reverse(
-                    'komitets:komitet-detail',
-                    kwargs={'pk': kwargs['pk']}
-                ))
-            AnswerOption.objects.filter(
-                pk__in=[int(val) for val in value],
-            ).update(amount=F('amount') + 1)
+                key_to_delete = key
+                answers_to_save.append(
+                    Answer(answer_option=option,
+                           user=self.request.user)
+                )
+        if key_to_delete:
+            del post[key_to_delete]
+        answers_to_save.extend(
+            [Answer(answer_option=AnswerOption.objects.get(pk=option_id),
+                    user=self.request.user)
+             for _, value in post.items()
+             for option_id in value]
+        )
+        Answer.objects.bulk_create(answers_to_save)
         return HttpResponseRedirect(reverse(
             'komitets:komitet-detail',
             kwargs={'pk': kwargs['pk']}

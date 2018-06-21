@@ -19,6 +19,13 @@ class Card(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
+    def is_voted_by(self, user):
+        answers = Answer.objects.filter(answer_option__card=self)
+        answers = answers.filter(user_id=user)
+        if len(answers) != 0:
+            return True
+        return False
+
 
 class Answer(models.Model):
     user = models.ForeignKey(auth_models.User, on_delete=models.CASCADE)
@@ -29,10 +36,9 @@ class AnswerOption(models.Model):
     answerers = models.ManyToManyField(auth_models.User, through=Answer)
     card = models.ForeignKey(Card, on_delete=models.CASCADE)
     answer_content = models.CharField(max_length=50)
-    amount = models.IntegerField(default=0)
 
-
-
+    def get_amount(self):
+        return self.answer_set.count()
 
 # class Attachment(models.Model):
 #     card = models.ForeignKey(Card)
