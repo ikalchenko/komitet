@@ -73,7 +73,7 @@ class ActivateUserView(generic.TemplateView):
         except(TypeError, ValueError, OverflowError, User.DoesNotExist):
             user = None
         if user is not None \
-                and aat.check_token(user, kwargs['token']):
+            and aat.check_token(user, kwargs['token']):
             user.is_active = True
             user.save()
             return render(
@@ -106,13 +106,12 @@ class ResetPasswordRequestView(PasswordResetView):
                                           ' to reset password.'})
 
 
-class ResetPasswordView(generic.FormView):
+class ResetPasswordView(generic.TemplateView):
     template_name = 'users/password_reset.html'
 
-    def get_form(self, form_class=None):
-        return ResetPasswordForm(self.request.user)
-
     def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return HttpResponseRedirect(reverse('komitets:main'))
         try:
             uid = force_text(urlsafe_base64_decode(kwargs['uidb64']))
             user = User.objects.get(pk=uid)
@@ -123,47 +122,37 @@ class ResetPasswordView(generic.FormView):
                 self.request, 'users/account_info.html',
                 context={'message': 'Password reset link is invalid!'}
             )
-        else:
+        return render(self.request, 'users/password_reset.html',
+                      context={'form': ResetPasswordForm(user)})
+
+    def post(self, request, *args, **kwargs):
+        try:
+            uid = urlsafe_base64_decode(kwargs['uidb64'])
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+        data = {
+            'new_password1': request.POST['new_password1'],
+            'new_password2': request.POST['new_password2'],
+        }
+        form = ResetPasswordForm(
+            user=user,
+            data=data
+        )
+        if user is not None and prt.check_token(user, kwargs['token']):
+            if form.is_valid():
+                user.set_password(data['new_password1'])
+                user.save()
+                return render(
+                    self.request, 'users/account_info.html',
+                    context={
+                        'message': 'Your password was successfuly changed.'
+                                   ' Now you can login.'})
             return render(self.request, 'users/password_reset.html',
-                          context={'form': ResetPasswordForm(user)})
-
-    def form_valid(self, form):
-        print(self.request.POST)
-
-    # def post(self, request, *args, **kwargs):
-    #     print(dir(request))
-    #     form = ResetPasswordForm(user=request.user,
-    # password1=kwargs['password1'],
-    #  password2=kwargs['password2'])
-    #     print(form)
-    #     try:
-    #         uid = urlsafe_base64_decode(kwargs['uidb64'])
-    #         user = User.objects.get(pk=uid)
-    #     except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-    #         user = None
-    #     if user is not None and prt.check_token(user, kwargs['token']):
-    #
-    #         if form.is_valid():
-    #             user.set_password('1')
-    #             user.save()
-    #             return self.form_valid(form)
-    #         else:
-    #             print(form.error_messages)
-    #             return render(self.request, 'users/account_info.html',
-    #                           context={'message': 'The two password
-    #  fields didn\'t match.'})
-    #     else:
-    #         return render(self.request, 'users/account_info.html',
-    #                       context={'message': 'Password reset
-    #  link is invalid!'})
-    #
-    # def form_valid(self, form):
-    #     print('valid')
-    #     return super().form_valid(form)
-    #
-    # def form_invalid(self, form):
-    #     print('invalid')
-    #     return super().form_invalid(form)
+                          context={'form': form})
+        return render(self.request, 'users/account_info.html',
+                      context={'message': 'Password reset\
+                                   link is invalid!'})
 
 
 class UserDetailView(generic.DetailView):
@@ -186,7 +175,8 @@ class EditUserView(generic.UpdateView):
     template_name = 'users/user_edit.html'
 
     def get_success_url(self):
-        return reverse('users:user-detail', kwargs={'pk': self.request.user.id})
+        return reverse('users:user-detail',
+                       kwargs={'pk': self.request.user.id})
 
     def get_context_data(self, **kwargs):
         if self.kwargs['pk'] == self.request.user.id:

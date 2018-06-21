@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth import forms as auth_form
+from django.contrib.auth import forms as auth_form, password_validation
 from django.contrib.auth.models import User
 
 
@@ -49,10 +49,10 @@ class SignUpForm(auth_form.UserCreationForm):
     def clean_email(self):
         email = self.cleaned_data.get('email')
         username = self.cleaned_data.get('username')
-        if email and User.objects\
-                .filter(email=email)\
-                .exclude(username=username)\
-                .exists():
+        if email and User.objects \
+            .filter(email=email) \
+            .exclude(username=username) \
+            .exists():
             raise forms.ValidationError('Email address must be unique.')
         return email
 
@@ -67,11 +67,14 @@ class RequestResetPasswordForm(auth_form.PasswordResetForm):
 class ResetPasswordForm(auth_form.SetPasswordForm):
     new_password1 = forms.CharField(
         label='New password',
-        widget=forms.PasswordInput(attrs={'class': 'form-control', })
+        widget=forms.PasswordInput(attrs={'class': 'form-control', }),
+        strip=False,
     )
     new_password2 = forms.CharField(
-        label='Confirm new password',
-        widget=forms.PasswordInput(attrs={'class': 'form-control', })
+        label='New password confirmation',
+        strip=False,
+        widget=forms.PasswordInput(attrs={'class': 'form-control', }),
+
     )
 
 
